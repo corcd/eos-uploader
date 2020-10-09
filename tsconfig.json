@@ -6,6 +6,7 @@
     "module": "ESNext",
     "lib": [
       "dom",
+      "dom.Iterable",
       "es5",
       "es2015.promise",
       "es2015",

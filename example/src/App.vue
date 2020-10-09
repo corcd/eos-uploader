@@ -1,3 +1,10 @@
+<!--
+ * @Author: Whzcorcd
+ * @Date: 2020-10-09 10:03:16
+ * @LastEditors: Whzcorcd
+ * @LastEditTime: 2020-10-09 19:40:34
+ * @Description: file content
+-->
 <template>
   <div id="app">
     <button @click="openUploader">open uploader</button>
@@ -15,7 +22,8 @@ export default {
         accessKeyId: '',
         secretAccessKey: '',
         endpoint: 'eos-beijing-4.cmecloud.cn',
-        sslEnabled: false
+        sslEnabled: false,
+        multiFiles: true
       })
       const res = await uploader.openUploader()
       console.log(res)
