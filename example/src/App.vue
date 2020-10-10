@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-09 10:03:16
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-10-09 19:40:34
+ * @LastEditTime: 2020-10-10 17:03:06
  * @Description: file content
 -->
 <template>
@@ -18,13 +18,6 @@ export default {
   name: 'App',
   methods: {
     async openUploader() {
-      const uploader = new Uploader({
-        accessKeyId: '',
-        secretAccessKey: '',
-        endpoint: 'eos-beijing-4.cmecloud.cn',
-        sslEnabled: false,
-        multiFiles: true
-      })
       const res = await uploader.openUploader()
       console.log(res)
     }

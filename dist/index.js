@@ -1,40 +1,24 @@
 import { __awaiter } from "tslib";
-import S3 from 'aws-sdk/clients/s3';
-import hash from 'object-hash';
-import dayjs from 'dayjs';
-var Access;
-(function (Access) {
-    Access[Access["private"] = 0] = "private";
-    Access[Access["public-read"] = 1] = "public-read";
-    Access[Access["public-read-write"] = 2] = "public-read-write";
-})(Access || (Access = {}));
+import Aliyun from './plugins/aliyun';
+import Cmecloud from './plugins/cmecloud';
 class Uploader {
-    constructor(options) {
-        this._s3 = undefined;
-        this._bucket = 'gallery';
+    constructor(provider, options) {
+        this._provider = 'aliyun';
         this._options = {
             accessKeyId: '',
-            secretAccessKey: '',
+            accessKeySecret: '',
             endpoint: '',
-            sslEnabled: false,
             multiFiles: false,
         };
         this._input = undefined;
-        const currentOptions = {
-            apiVersion: '2006‐03‐01',
-            accessKeyId: options.accessKeyId,
-            secretAccessKey: options.secretAccessKey,
-            endpoint: options.endpoint,
-            s3ForcePathStyle: true,
-            signatureVersion: 'v2',
-            sslEnabled: options.sslEnabled,
-        };
-        const keys = Object.values(currentOptions);
+        if (!provider)
+            throw new Error('请配置正确的云服务商');
+        const keys = Object.values(options);
         const integrity = keys.some(item => item === '' || item === null || item === undefined);
         if (integrity)
             throw new Error('请填写完整的配置信息');
+        this._provider = provider.toLowerCase();
         Object.assign(this._options, options);
-        this._s3 = new S3(currentOptions);
     }
     _createUploader() {
         const oldTarget = document.getElementById('file-chooser');
@@ -68,101 +52,68 @@ class Uploader {
         }
         this._input = undefined;
     }
-    _formatFileName(file) {
-        const fileHash = hash({
-            name: file.name,
-            timestamp: dayjs().format('{YYYY} MM-DD HH:mm:ss'),
-            salt: Math.random(),
-        }, { algorithm: 'sha1' });
-        const fileSuffix = file.name.split('.').slice(-1)[0];
-        return { fileHash, fileSuffix };
-    }
-    _singleUpload() {
+    _toggleUpload(filesList = null) {
         if (!this._input)
             return Promise.reject('请先构造 Uploader');
-        const file = this._input.files ? this._input.files[0] : null;
-        return new Promise((resolve, reject) => {
-            if (!this._s3)
-                return reject('SDK 加载失败');
-            const $S = this._s3;
-            if (file) {
-                const { fileHash, fileSuffix } = this._formatFileName(file);
-                const params = {
-                    Key: `${fileHash}.${fileSuffix}`,
-                    Bucket: this._bucket,
-                    Body: file,
-                    ACL: 'public-read',
-                };
-                $S.putObject(params, (err, data) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    return resolve(`${this._options.sslEnabled ? 'https' : 'http'}://${this._options.endpoint}/${this._bucket}/${fileHash}.${fileSuffix}`);
+        const files = filesList ? filesList : this._input.files;
+        switch (this._provider) {
+            case 'aliyun': {
+                const uploaderInstance = new Aliyun({
+                    accessKeyId: this._options.accessKeyId,
+                    accessKeySecret: this._options.accessKeySecret,
+                    endpoint: this._options.endpoint,
+                    cname: this._options.cname,
                 });
+                return uploaderInstance.upload(files);
             }
-            else {
-                return reject('无上传内容');
+            case 'cmecloud': {
+                const uploaderInstance = new Cmecloud({
+                    accessKeyId: this._options.accessKeyId,
+                    secretAccessKey: this._options.accessKeySecret,
+                    endpoint: this._options.endpoint,
+                    sslEnabled: true,
+                });
+                return uploaderInstance.upload(files);
             }
-        });
-    }
-    _multiUpload() {
-        if (!this._input)
-            return Promise.reject('请先构造 Uploader');
-        const files = this._input.files ? this._input.files : null;
-        console.log(files);
-        return new Promise((resolve, reject) => {
-            if (!this._s3)
-                return reject('SDK 加载失败');
-            const $S = this._s3;
-            const urls = [];
-            if (files) {
-                const filesListLength = files.length;
-                for (const item of files) {
-                    const { fileHash, fileSuffix } = this._formatFileName(item);
-                    const params = {
-                        Key: `${fileHash}.${fileSuffix}`,
-                        Bucket: this._bucket,
-                        Body: item,
-                        ACL: 'public-read',
-                    };
-                    $S.putObject(params, (err, data) => {
-                        if (err) {
-                            return reject(err);
-                        }
-                        urls.push(`${this._options.sslEnabled ? 'https' : 'http'}://${this._options.endpoint}/${this._bucket}/${fileHash}.${fileSuffix}`);
-                        if (urls.length === filesListLength)
-                            return resolve(urls);
-                    });
-                }
-            }
-            else {
-                return reject('无上传内容');
-            }
-        });
+            default:
+                return Promise.reject('请配置正确的云服务商');
+        }
     }
     openUploader() {
         return new Promise((resolve, reject) => {
             this._input = this._createUploader();
             this._input.addEventListener('change', (e) => __awaiter(this, void 0, void 0, function* () {
                 e.preventDefault();
-                let res;
-                if (this._options.multiFiles) {
-                    res = yield this._multiUpload().catch(err => {
-                        this._removeUploader();
-                        reject(err);
-                    });
-                }
-                else {
-                    res = yield this._singleUpload().catch(err => {
-                        this._removeUploader();
-                        reject(err);
-                    });
-                }
+                const res = yield this._toggleUpload().catch(err => {
+                    this._removeUploader();
+                    return reject(err);
+                });
                 this._removeUploader();
                 return resolve(res);
             }), false);
             this._input.click();
         });
+    }
+    fillUploader(files) {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            const res = yield this._toggleUpload(files).catch(err => {
+                this._removeUploader();
+                return reject(err);
+            });
+            this._removeUploader();
+            return resolve(res);
+        }));
+    }
+    dataUrlToFile(dataUrl, filename) {
+        const arr = dataUrl.split(',');
+        if (!arr[0].match(/:(.*?);/))
+            return null;
+        const mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        let i = n;
+        while (i--) {
+            u8arr[i] = bstr.charCodeAt(i);
+        }
+        return new File([u8arr], filename, { type: mime });
     }
 }
 export default Uploader;

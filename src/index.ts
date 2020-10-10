@@ -2,63 +2,35 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-10-09 19:37:25
- * @Description: file content
+ * @LastEditTime: 2020-10-10 17:05:08
+ * @Description: index
  */
-import S3 from 'aws-sdk/clients/s3'
-import hash from 'object-hash'
-import dayjs from 'dayjs'
+import Aliyun from './plugins/aliyun'
+import Cmecloud from './plugins/cmecloud'
 
-enum Access {
-  'private',
-  'public-read',
-  'public-read-write',
-}
-
-interface UploaderOptions {
-  accessKeyId: string
-  secretAccessKey: string
-  endpoint: string
-  sslEnabled: boolean
-  multiFiles?: boolean
-}
-
-type IFileInfo = {
-  fileHash: string
-  fileSuffix: string
-}
+import { ServiceProviders, UploaderOptions } from './types'
 
 class Uploader {
-  private _s3?: S3 = undefined
-  private _bucket: string = 'gallery'
+  private _provider: ServiceProviders = 'aliyun'
   private _options: UploaderOptions = {
     accessKeyId: '',
-    secretAccessKey: '',
+    accessKeySecret: '',
     endpoint: '',
-    sslEnabled: false,
     multiFiles: false,
   }
   private _input?: HTMLInputElement = undefined
 
-  constructor(options: UploaderOptions) {
-    const currentOptions = {
-      apiVersion: '2006‐03‐01',
-      accessKeyId: options.accessKeyId,
-      secretAccessKey: options.secretAccessKey,
-      endpoint: options.endpoint,
-      s3ForcePathStyle: true,
-      signatureVersion: 'v2',
-      sslEnabled: options.sslEnabled,
-    }
+  constructor(provider: ServiceProviders, options: UploaderOptions) {
+    if (!provider) throw new Error('请配置正确的云服务商')
 
-    const keys = Object.values(currentOptions)
+    const keys = Object.values(options)
     const integrity = keys.some(
       item => item === '' || item === null || item === undefined
     )
     if (integrity) throw new Error('请填写完整的配置信息')
 
+    this._provider = provider.toLowerCase() as ServiceProviders
     Object.assign(this._options, options)
-    this._s3 = new S3(currentOptions)
   }
 
   /**
@@ -118,110 +90,38 @@ class Uploader {
   }
 
   /**
-   * 文件名哈希
-   * @date 2020-10-09
-   * @param {File}
-   * @returns {IFileInfo}
-   */
-  private _formatFileName(file: File): IFileInfo {
-    const fileHash: string = hash(
-      {
-        name: file.name,
-        timestamp: dayjs().format('{YYYY} MM-DD HH:mm:ss'),
-        salt: Math.random(),
-      },
-      { algorithm: 'sha1' }
-    )
-    const fileSuffix: string = file.name.split('.').slice(-1)[0]
-    return { fileHash, fileSuffix }
-  }
-
-  /**
-   * 单文件上传
+   * 文件上传
    * @date 2020-09-30
-   * @param {Void}
+   * @param {FileList | null} filesList
    * @returns {Promise}
    */
-  private _singleUpload(): Promise<any> {
+  private _toggleUpload(filesList: FileList | null = null): Promise<any> {
     if (!this._input) return Promise.reject('请先构造 Uploader')
-    const file = this._input.files ? this._input.files[0] : null
 
-    return new Promise((resolve, reject) => {
-      if (!this._s3) return reject('SDK 加载失败')
-      const $S = this._s3
-      if (file) {
-        const { fileHash, fileSuffix } = this._formatFileName(file)
+    const files = filesList ? filesList : this._input.files
 
-        const params = {
-          Key: `${fileHash}.${fileSuffix}`,
-          Bucket: this._bucket,
-          Body: file,
-          ACL: 'public-read',
-        }
-        $S.putObject(params, (err, data) => {
-          if (err) {
-            return reject(err)
-          }
-
-          // TODO 超时设置
-          return resolve(
-            `${this._options.sslEnabled ? 'https' : 'http'}://${
-              this._options.endpoint
-            }/${this._bucket}/${fileHash}.${fileSuffix}`
-          )
+    switch (this._provider) {
+      case 'aliyun': {
+        const uploaderInstance = new Aliyun({
+          accessKeyId: this._options.accessKeyId,
+          accessKeySecret: this._options.accessKeySecret,
+          endpoint: this._options.endpoint,
+          cname: this._options.cname,
         })
-      } else {
-        return reject('无上传内容')
+        return uploaderInstance.upload(files)
       }
-    })
-  }
-
-  /**
-   * 多文件上传
-   * @date 2020-09-30
-   * @param {Void}
-   * @returns {Promise}
-   */
-  private _multiUpload(): Promise<any> {
-    if (!this._input) return Promise.reject('请先构造 Uploader')
-    const files = this._input.files ? this._input.files : null
-
-    console.log(files)
-
-    return new Promise((resolve, reject) => {
-      if (!this._s3) return reject('SDK 加载失败')
-      const $S = this._s3
-      const urls: string[] = []
-      if (files) {
-        const filesListLength = files.length
-        for (const item of files) {
-          const { fileHash, fileSuffix } = this._formatFileName(item)
-
-          const params = {
-            Key: `${fileHash}.${fileSuffix}`,
-            Bucket: this._bucket,
-            Body: item,
-            ACL: 'public-read',
-          }
-          $S.putObject(params, (err, data) => {
-            if (err) {
-              return reject(err)
-            }
-
-            urls.push(
-              `${this._options.sslEnabled ? 'https' : 'http'}://${
-                this._options.endpoint
-              }/${this._bucket}/${fileHash}.${fileSuffix}`
-            )
-
-            // TODO 超时设置
-            if (urls.length === filesListLength) return resolve(urls)
-          })
-        }
-      } else {
-        return reject('无上传内容')
+      case 'cmecloud': {
+        const uploaderInstance = new Cmecloud({
+          accessKeyId: this._options.accessKeyId,
+          secretAccessKey: this._options.accessKeySecret,
+          endpoint: this._options.endpoint,
+          sslEnabled: true,
+        })
+        return uploaderInstance.upload(files)
       }
-    })
+      default:
+        return Promise.reject('请配置正确的云服务商')
+    }
   }
 
   /**
@@ -237,18 +137,11 @@ class Uploader {
         'change',
         async e => {
           e.preventDefault()
-          let res: string
-          if (this._options.multiFiles) {
-            res = await this._multiUpload().catch(err => {
-              this._removeUploader()
-              reject(err)
-            })
-          } else {
-            res = await this._singleUpload().catch(err => {
-              this._removeUploader()
-              reject(err)
-            })
-          }
+          const res = await this._toggleUpload().catch(err => {
+            this._removeUploader()
+            return reject(err)
+          })
+
           this._removeUploader()
           return resolve(res)
         },
@@ -256,6 +149,47 @@ class Uploader {
       )
       this._input.click()
     })
+  }
+
+  /**
+   * 装填器
+   * @date 2020-10-10
+   * @param {FileList} files
+   * @returns {Promise}
+   */
+  public fillUploader(files: FileList): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      const res = await this._toggleUpload(files).catch(err => {
+        this._removeUploader()
+        return reject(err)
+      })
+
+      this._removeUploader()
+      return resolve(res)
+    })
+  }
+
+  /**
+   * 转换器
+   * @date 2020-10-10
+   * @param {String} dataUrl
+   * @param {String} filename
+   * @returns {File | null}
+   */
+  public dataUrlToFile(dataUrl: string, filename: string): File | null {
+    const arr = dataUrl.split(',')
+    if (!arr[0].match(/:(.*?);/)) return null
+
+    const mime = (arr[0].match(/:(.*?);/) as RegExpMatchArray)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n)
+
+    let i = n
+    while (i--) {
+      u8arr[i] = bstr.charCodeAt(i)
+    }
+    return new File([u8arr], filename, { type: mime })
   }
 }
 

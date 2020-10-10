@@ -1,21 +1,14 @@
-interface UploaderOptions {
-    accessKeyId: string;
-    secretAccessKey: string;
-    endpoint: string;
-    sslEnabled: boolean;
-    multiFiles?: boolean;
-}
+import { ServiceProviders, UploaderOptions } from './types';
 declare class Uploader {
-    private _s3?;
-    private _bucket;
+    private _provider;
     private _options;
     private _input?;
-    constructor(options: UploaderOptions);
+    constructor(provider: ServiceProviders, options: UploaderOptions);
     private _createUploader;
     private _removeUploader;
-    private _formatFileName;
-    private _singleUpload;
-    private _multiUpload;
+    private _toggleUpload;
     openUploader(): Promise<any>;
+    fillUploader(files: FileList): Promise<any>;
+    dataUrlToFile(dataUrl: string, filename: string): File | null;
 }
 export default Uploader;
