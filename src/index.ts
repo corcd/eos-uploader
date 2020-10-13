@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-10-10 17:05:08
+ * @LastEditTime: 2020-10-10 22:44:55
  * @Description: index
  */
 import Aliyun from './plugins/aliyun'
@@ -95,10 +95,14 @@ class Uploader {
    * @param {FileList | null} filesList
    * @returns {Promise}
    */
-  private _toggleUpload(filesList: FileList | null = null): Promise<any> {
-    if (!this._input) return Promise.reject('请先构造 Uploader')
+  private _toggleUpload(
+    filesList: FileList | null = null,
+    standalone: boolean = false
+  ): Promise<any> {
+    if (!this._input && !standalone) return Promise.reject('请先构造 Uploader')
 
-    const files = filesList ? filesList : this._input.files
+    const files = filesList ? filesList : this._input ? this._input.files : null
+    if (!files) return Promise.reject('无上传内容')
 
     switch (this._provider) {
       case 'aliyun': {
@@ -159,7 +163,7 @@ class Uploader {
    */
   public fillUploader(files: FileList): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      const res = await this._toggleUpload(files).catch(err => {
+      const res = await this._toggleUpload(files, true).catch(err => {
         this._removeUploader()
         return reject(err)
       })

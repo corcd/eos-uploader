@@ -52,10 +52,12 @@ class Uploader {
         }
         this._input = undefined;
     }
-    _toggleUpload(filesList = null) {
-        if (!this._input)
+    _toggleUpload(filesList = null, standalone = false) {
+        if (!this._input && !standalone)
             return Promise.reject('请先构造 Uploader');
-        const files = filesList ? filesList : this._input.files;
+        const files = filesList ? filesList : this._input ? this._input.files : null;
+        if (!files)
+            return Promise.reject('无上传内容');
         switch (this._provider) {
             case 'aliyun': {
                 const uploaderInstance = new Aliyun({
@@ -96,7 +98,7 @@ class Uploader {
     }
     fillUploader(files) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-            const res = yield this._toggleUpload(files).catch(err => {
+            const res = yield this._toggleUpload(files, true).catch(err => {
                 this._removeUploader();
                 return reject(err);
             });
