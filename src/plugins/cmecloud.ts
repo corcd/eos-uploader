@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:43:59
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-10-10 16:53:51
+ * @LastEditTime: 2020-10-13 20:05:17
  * @Description: file content
  */
 import S3 from 'aws-sdk/clients/s3'
@@ -14,7 +14,7 @@ import { CmecloudClientOptions, IFileInfo } from '../types'
 export default class Cmecloud {
   static readonly _bucket: string = 'gallery'
 
-  private _client?: S3 = undefined
+  private _client?: S3 = void 0
   private _options = {
     apiVersion: '2006‐03‐01',
     accessKeyId: '',

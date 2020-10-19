@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-10-10 22:44:55
+ * @LastEditTime: 2020-10-13 20:05:02
  * @Description: index
  */
 import Aliyun from './plugins/aliyun'
@@ -18,7 +18,7 @@ class Uploader {
     endpoint: '',
     multiFiles: false,
   }
-  private _input?: HTMLInputElement = undefined
+  private _input?: HTMLInputElement = void 0
 
   constructor(provider: ServiceProviders, options: UploaderOptions) {
     if (!provider) throw new Error('请配置正确的云服务商')
@@ -86,7 +86,7 @@ class Uploader {
     if (target) {
       document.getElementsByTagName('body')[0].removeChild(target)
     }
-    this._input = undefined
+    this._input = void 0
   }
 
   /**

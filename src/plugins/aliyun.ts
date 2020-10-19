@@ -14,7 +14,7 @@ import { AliyunClientOptions, IFileInfo } from '../types'
 export default class Aliyun {
   static readonly _bucket: string = 'guangdianyun'
 
-  private _client?: OSS = undefined
+  private _client?: OSS = void 0
   private _options = {
     accessKeyId: '',
     accessKeySecret: '',
