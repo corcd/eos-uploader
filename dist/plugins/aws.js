@@ -8,6 +8,7 @@ export default class Aws {
         this._options = {
             accessKeyId: '',
             secretAccessKey: '',
+            endpoint: '',
             region: '',
             cname: '',
         };
@@ -15,11 +16,15 @@ export default class Aws {
         const keys = Object.keys(this._options);
         if (!keys.includes('accessKeyId') ||
             !keys.includes('secretAccessKey') ||
-            !keys.includes('region') ||
             !keys.includes('cname'))
             throw new Error('缺少必要的配置信息');
-        const values = Object.values(this._options);
-        const integrity = values.some(item => item === '' || item === null || item === undefined);
+        const { endpoint, region } = this._options;
+        if (Object.values(Object.create({ endpoint, region })).some(item => item === '' || item === null || item === undefined))
+            throw new Error('必须提供 endpoint 或者 region 其中一个配置参数');
+        const entries = Object.entries(this._options);
+        const integrity = entries.some(item => item[0] !== 'endpoint' &&
+            item[0] !== 'region' &&
+            (item[1] === '' || item[1] === null || item[1] === undefined));
         if (integrity)
             throw new Error('请填写完整的配置信息');
         const credentials = {
@@ -27,8 +32,9 @@ export default class Aws {
             accessKeyId: this._options.accessKeyId,
             secretAccessKey: this._options.secretAccessKey,
         };
+        const _region = this._options.endpoint.match(/s3\.(\S*)\.amazonaws\.com\.cn/i);
         AWS.config.update(credentials);
-        AWS.config.region = this._options.region;
+        AWS.config.region = _region ? _region[1] : this._options.region;
         this._client = new AWS.S3({
             params: { Bucket: Aws._bucket },
         });

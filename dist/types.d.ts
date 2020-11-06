@@ -26,7 +26,8 @@ export interface AliyunClientOptions {
 export interface AwsClientOptions {
     accessKeyId: string;
     secretAccessKey: string;
-    region: string;
+    endpoint?: string;
+    region?: string;
     cname?: string;
 }
 export declare type IFileInfo = {

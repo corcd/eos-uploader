@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 14:29:16
+ * @LastEditTime: 2020-11-06 16:53:39
  * @Description: index
  */
 import Aliyun from './plugins/aliyun'
@@ -26,8 +26,8 @@ class Uploader {
   constructor(provider: ServiceProviders, options: UploaderOptions) {
     if (!provider) throw new Error('请配置正确的云服务商')
 
-    const keys = Object.values(options)
-    const integrity = keys.some(
+    const values = Object.values(options)
+    const integrity = values.some(
       item => item === '' || item === null || item === undefined
     )
     if (integrity) throw new Error('请填写完整的配置信息')
@@ -129,6 +129,7 @@ class Uploader {
         const uploaderInstance = new Aws({
           accessKeyId: this._options.accessKeyId,
           secretAccessKey: this._options.accessKeySecret,
+          endpoint: <string>this._options.endpoint,
           region: <string>this._options.region,
           cname: this._options.cname,
         })

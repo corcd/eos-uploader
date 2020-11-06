@@ -16,8 +16,8 @@ class Uploader {
         this._input = void 0;
         if (!provider)
             throw new Error('请配置正确的云服务商');
-        const keys = Object.values(options);
-        const integrity = keys.some(item => item === '' || item === null || item === undefined);
+        const values = Object.values(options);
+        const integrity = values.some(item => item === '' || item === null || item === undefined);
         if (integrity)
             throw new Error('请填写完整的配置信息');
         this._provider = provider.toLowerCase();
@@ -83,6 +83,7 @@ class Uploader {
                 const uploaderInstance = new Aws({
                     accessKeyId: this._options.accessKeyId,
                     secretAccessKey: this._options.accessKeySecret,
+                    endpoint: this._options.endpoint,
                     region: this._options.region,
                     cname: this._options.cname,
                 });

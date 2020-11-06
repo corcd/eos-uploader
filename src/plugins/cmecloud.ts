@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:43:59
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 14:33:40
+ * @LastEditTime: 2020-11-06 16:01:14
  * @Description: file content
  */
 import S3 from 'aws-sdk/clients/s3'

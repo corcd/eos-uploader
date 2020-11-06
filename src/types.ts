@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:44:32
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 12:29:38
+ * @LastEditTime: 2020-11-06 16:20:32
  * @Description: ts types modules
  */
 export enum Access {
@@ -38,7 +38,8 @@ export interface AliyunClientOptions {
 export interface AwsClientOptions {
   accessKeyId: string
   secretAccessKey: string
-  region: string
+  endpoint?: string
+  region?: string
   cname?: string
 }
 
