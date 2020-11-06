@@ -1,6 +1,7 @@
 import { __awaiter } from "tslib";
 import Aliyun from './plugins/aliyun';
 import Cmecloud from './plugins/cmecloud';
+import Aws from './plugins/aws';
 class Uploader {
     constructor(provider, options) {
         this._provider = 'aliyun';
@@ -8,9 +9,11 @@ class Uploader {
             accessKeyId: '',
             accessKeySecret: '',
             endpoint: '',
+            region: '',
+            cname: '',
             multiFiles: false,
         };
-        this._input = undefined;
+        this._input = void 0;
         if (!provider)
             throw new Error('请配置正确的云服务商');
         const keys = Object.values(options);
@@ -50,7 +53,7 @@ class Uploader {
         if (target) {
             document.getElementsByTagName('body')[0].removeChild(target);
         }
-        this._input = undefined;
+        this._input = void 0;
     }
     _toggleUpload(filesList = null, standalone = false) {
         if (!this._input && !standalone)
@@ -64,7 +67,6 @@ class Uploader {
                     accessKeyId: this._options.accessKeyId,
                     accessKeySecret: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,
-                    cname: this._options.cname,
                 });
                 return uploaderInstance.upload(files);
             }
@@ -74,6 +76,15 @@ class Uploader {
                     secretAccessKey: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,
                     sslEnabled: true,
+                });
+                return uploaderInstance.upload(files);
+            }
+            case 'aws': {
+                const uploaderInstance = new Aws({
+                    accessKeyId: this._options.accessKeyId,
+                    secretAccessKey: this._options.accessKeySecret,
+                    region: this._options.region,
+                    cname: this._options.cname,
                 });
                 return uploaderInstance.upload(files);
             }

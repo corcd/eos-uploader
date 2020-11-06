@@ -2,11 +2,12 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-10-13 20:05:02
+ * @LastEditTime: 2020-11-06 14:29:16
  * @Description: index
  */
 import Aliyun from './plugins/aliyun'
 import Cmecloud from './plugins/cmecloud'
+import Aws from './plugins/aws'
 
 import { ServiceProviders, UploaderOptions } from './types'
 
@@ -16,6 +17,8 @@ class Uploader {
     accessKeyId: '',
     accessKeySecret: '',
     endpoint: '',
+    region: '',
+    cname: '',
     multiFiles: false,
   }
   private _input?: HTMLInputElement = void 0
@@ -109,8 +112,7 @@ class Uploader {
         const uploaderInstance = new Aliyun({
           accessKeyId: this._options.accessKeyId,
           accessKeySecret: this._options.accessKeySecret,
-          endpoint: this._options.endpoint,
-          cname: this._options.cname,
+          endpoint: <string>this._options.endpoint,
         })
         return uploaderInstance.upload(files)
       }
@@ -118,8 +120,17 @@ class Uploader {
         const uploaderInstance = new Cmecloud({
           accessKeyId: this._options.accessKeyId,
           secretAccessKey: this._options.accessKeySecret,
-          endpoint: this._options.endpoint,
+          endpoint: <string>this._options.endpoint,
           sslEnabled: true,
+        })
+        return uploaderInstance.upload(files)
+      }
+      case 'aws': {
+        const uploaderInstance = new Aws({
+          accessKeyId: this._options.accessKeyId,
+          secretAccessKey: this._options.accessKeySecret,
+          region: <string>this._options.region,
+          cname: this._options.cname,
         })
         return uploaderInstance.upload(files)
       }

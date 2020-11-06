@@ -3,12 +3,13 @@ export declare enum Access {
     'public-read' = 1,
     'public-read-write' = 2
 }
-export declare type ServiceProviders = 'aliyun' | 'cmecloud';
+export declare type ServiceProviders = 'aliyun' | 'cmecloud' | 'aws';
 export interface UploaderOptions {
     accessKeyId: string;
     accessKeySecret: string;
-    endpoint: string;
-    cname?: boolean;
+    endpoint?: string;
+    region?: string;
+    cname?: string;
     multiFiles?: boolean;
 }
 export interface CmecloudClientOptions {
@@ -21,7 +22,12 @@ export interface AliyunClientOptions {
     accessKeyId: string;
     accessKeySecret: string;
     endpoint: string;
-    cname?: boolean;
+}
+export interface AwsClientOptions {
+    accessKeyId: string;
+    secretAccessKey: string;
+    region: string;
+    cname?: string;
 }
 export declare type IFileInfo = {
     fileHash: string;

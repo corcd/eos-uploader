@@ -31,17 +31,18 @@ const uploader = new Uploader({
 import Uploader from '@gdyfe/uploader'
 
 const uploader = new Uploader('您的云服务商（可选项目见下）', {
-  accessKeyId: '您的 Access Id',
-  accessKeySecret: '您的 Access Key',
-  endpoint: 'Bucket 域名', // 例：eos-beijing-4.cmecloud.cn
-  cname: false, // 是否为自定义域名（仅阿里云支持）
-  multiFiles: false, // 是否开启多文件选择
+  accessKeyId: '您的 Access Id', // 必需
+  accessKeySecret: '您的 Access Key', // 必需
+  endpoint: 'Bucket 域名', // 非必需，例：eos-beijing-4.cmecloud.cn
+  region: 'Bucket 所在区域', // 非必需，目前仅 AWS 需要，例：cn-north-1
+  cname: false, // 非必需，自定义域名（仅 AWS 支持）
+  multiFiles: false, // 非必需，是否开启多文件选择
 })
 ```
 
-云服务商目前按需支持阿里云 `'aliyun'`、移动云 `'cmecloud'`，未来将添加腾讯云、华为云、AWS 等主流云服务商的集成
+云服务商目前按需支持阿里云 `'aliyun'`、AWS `'aws'`、移动云 `'cmecloud'`，未来将添加腾讯云、华为云等更多主流云服务商的集成
 
-目前目标 Bucket 为内部限制（当前默认阿里云 Bucket 为 guangdianyun，移动云 Bucket 为 gallery，后续可考虑开放配置），后续将开放设置，以及集成默认的 `endpoint`
+> 目前目标 Bucket 为内部限制（当前默认阿里云 Bucket 为 guangdianyun，aws Bucket 为 gallery-prod，移动云 Bucket 为 gallery，后续可考虑开放配置）
 
 ## Previous API（Version 1.0.x）
 
@@ -54,7 +55,7 @@ const uploader = new Uploader('您的云服务商（可选项目见下）', {
 @returns {Promise}
 ```
 
-需先行构造一个 <input type="file" id="***" /> 元素，其唯一 id 属性即为参数 target，返回值为 Promise，上传成功后返回可访问文件的 url
+需先行构造一个 `<input type="file" id="***" />` 元素，其唯一 id 属性即为参数 target，返回值为 Promise，上传成功后返回可访问文件的 url
 
 ### Uploader.download(filename)
 

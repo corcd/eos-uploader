@@ -4,21 +4,25 @@ import hash from 'object-hash';
 import dayjs from 'dayjs';
 export default class Aliyun {
     constructor(options) {
-        this._client = undefined;
+        this._client = void 0;
         this._options = {
             accessKeyId: '',
             accessKeySecret: '',
             endpoint: '',
             bucket: '',
-            cname: false,
             secure: true,
         };
         Object.assign(this._options, options);
         this._options.bucket = Aliyun._bucket;
-        const keys = Object.values(this._options);
-        const integrity = keys.some(item => item === '' || item === null || item === undefined);
+        const keys = Object.keys(this._options);
+        if (!keys.includes('accessKeyId') ||
+            !keys.includes('accessKeyId') ||
+            !keys.includes('endpoint'))
+            throw new Error('缺少必要的配置信息');
+        const values = Object.values(this._options);
+        const integrity = values.some(item => item === '' || item === null || item === undefined);
         if (integrity)
-            throw new Error('请填写完整的配置信息');
+            throw new Error('请填写合法的配置信息');
         this._client = new OSS(this._options);
     }
     get getClientInstance() {

@@ -2,12 +2,12 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-09 10:03:16
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-10-10 17:03:06
+ * @LastEditTime: 2020-11-06 14:47:42
  * @Description: file content
 -->
 <template>
   <div id="app">
-    <button @click="openUploader">open uploader</button>
+    <button @click="upload">open uploader</button>
   </div>
 </template>
 
@@ -17,7 +17,8 @@ import Uploader from '@gdyfe/uploader'
 export default {
   name: 'App',
   methods: {
-    async openUploader() {
+    async upload() {
+      const uploader = new Uploader()
       const res = await uploader.openUploader()
       console.log(res)
     }
