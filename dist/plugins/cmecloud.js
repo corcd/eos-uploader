@@ -9,11 +9,15 @@ export default class Cmecloud {
             accessKeyId: '',
             secretAccessKey: '',
             endpoint: '',
+            bucket: Cmecloud._bucket,
             s3ForcePathStyle: true,
             signatureVersion: 'v2',
             sslEnabled: false,
         };
         Object.assign(this._options, options);
+        if (!options.bucket) {
+            this._options.bucket = Cmecloud._bucket;
+        }
         const keys = Object.keys(this._options);
         if (!keys.includes('accessKeyId') ||
             !keys.includes('secretAccessKey') ||
@@ -50,7 +54,7 @@ export default class Cmecloud {
                 const { fileHash, fileSuffix } = this._formatFileName(item);
                 const params = {
                     Key: `${fileHash}.${fileSuffix}`,
-                    Bucket: Cmecloud._bucket,
+                    Bucket: this._options.bucket,
                     Body: item,
                     ACL: 'public-read',
                 };
@@ -59,10 +63,10 @@ export default class Cmecloud {
                         return reject(err);
                     }
                     if (filesListLength === 1) {
-                        return resolve(`${this._options.sslEnabled ? 'https' : 'http'}://${this._options.endpoint}/${Cmecloud._bucket}/${fileHash}.${fileSuffix}`);
+                        return resolve(`${this._options.sslEnabled ? 'https' : 'http'}://${this._options.endpoint}/${this._options.bucket}/${fileHash}.${fileSuffix}`);
                     }
                     else {
-                        urls.push(`${this._options.sslEnabled ? 'https' : 'http'}://${this._options.endpoint}/${Cmecloud._bucket}/${fileHash}.${fileSuffix}`);
+                        urls.push(`${this._options.sslEnabled ? 'https' : 'http'}://${this._options.endpoint}/${this._options.bucket}/${fileHash}.${fileSuffix}`);
                         if (urls.length === filesListLength)
                             return resolve(urls);
                     }

@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-09 10:03:16
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 16:55:01
+ * @LastEditTime: 2020-12-10 12:28:54
  * @Description: file content
 -->
 <template>
@@ -18,7 +18,12 @@ export default {
   name: 'App',
   methods: {
     async upload() {
-      const uploader = new Uploader()
+      const uploader = new Uploader('cmecloud', {
+        accessKeyId: 'x',
+        accessKeySecret: 'x',
+        endpoint: 'eos-wuxi-1.cmecloud.cn',
+        bucket: 'g-gallery'
+      })
       const res = await uploader.openUploader()
       console.log(res)
     }

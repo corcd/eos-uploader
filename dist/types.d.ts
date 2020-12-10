@@ -10,24 +10,29 @@ export interface UploaderOptions {
     endpoint?: string;
     region?: string;
     cname?: string;
+    bucket?: string;
+    accept?: string;
     multiFiles?: boolean;
 }
 export interface CmecloudClientOptions {
     accessKeyId: string;
     secretAccessKey: string;
     endpoint: string;
+    bucket?: string;
     sslEnabled: boolean;
 }
 export interface AliyunClientOptions {
     accessKeyId: string;
     accessKeySecret: string;
     endpoint: string;
+    bucket?: string;
 }
 export interface AwsClientOptions {
     accessKeyId: string;
     secretAccessKey: string;
     endpoint?: string;
     region?: string;
+    bucket?: string;
     cname?: string;
 }
 export declare type IFileInfo = {

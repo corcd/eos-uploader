@@ -10,9 +10,13 @@ export default class Aws {
             secretAccessKey: '',
             endpoint: '',
             region: '',
+            bucket: Aws._bucket,
             cname: '',
         };
         Object.assign(this._options, options);
+        if (!options.bucket) {
+            this._options.bucket = Aws._bucket;
+        }
         const keys = Object.keys(this._options);
         if (!keys.includes('accessKeyId') ||
             !keys.includes('secretAccessKey') ||
@@ -36,7 +40,7 @@ export default class Aws {
         AWS.config.update(credentials);
         AWS.config.region = _region ? _region[1] : this._options.region;
         this._client = new AWS.S3({
-            params: { Bucket: Aws._bucket },
+            params: { Bucket: this._options.bucket },
         });
     }
     get getClientInstance() {
@@ -63,7 +67,7 @@ export default class Aws {
                 const { fileHash, fileSuffix } = this._formatFileName(item);
                 const params = {
                     Key: `${fileHash}.${fileSuffix}`,
-                    Bucket: Aws._bucket,
+                    Bucket: this._options.bucket,
                     ContentType: item.type,
                     Body: item,
                     'Access-Control-Allow-Credentials': '*',

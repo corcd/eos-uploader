@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:43:59
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 16:51:15
+ * @LastEditTime: 2020-12-02 11:24:35
  * @Description: file content
  */
 import AWS from 'aws-sdk'
@@ -20,11 +20,15 @@ export default class Aws {
     secretAccessKey: '',
     endpoint: '',
     region: '',
+    bucket: Aws._bucket,
     cname: '',
   }
 
   constructor(options: AwsClientOptions) {
     Object.assign(this._options, options)
+    if (!options.bucket) {
+      this._options.bucket = Aws._bucket
+    }
 
     const keys = Object.keys(this._options)
     if (
@@ -66,7 +70,7 @@ export default class Aws {
     AWS.config.region = _region ? _region[1] : this._options.region
 
     this._client = new AWS.S3({
-      params: { Bucket: Aws._bucket },
+      params: { Bucket: this._options.bucket },
     })
   }
 
@@ -118,7 +122,7 @@ export default class Aws {
 
         const params = {
           Key: `${fileHash}.${fileSuffix}`,
-          Bucket: Aws._bucket,
+          Bucket: this._options.bucket,
           ContentType: item.type,
           Body: item,
           'Access-Control-Allow-Credentials': '*',

@@ -9,11 +9,13 @@ export default class Aliyun {
             accessKeyId: '',
             accessKeySecret: '',
             endpoint: '',
-            bucket: '',
+            bucket: Aliyun._bucket,
             secure: true,
         };
         Object.assign(this._options, options);
-        this._options.bucket = Aliyun._bucket;
+        if (!options.bucket) {
+            this._options.bucket = Aliyun._bucket;
+        }
         const keys = Object.keys(this._options);
         if (!keys.includes('accessKeyId') ||
             !keys.includes('accessKeyId') ||

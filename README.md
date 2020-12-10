@@ -35,6 +35,7 @@ const uploader = new Uploader('您的云服务商（可选项目见下）', {
   accessKeySecret: '您的 Access Key', // 必需
   endpoint: 'Bucket 域名', // 非必需，例：eos-beijing-4.cmecloud.cn、s3.cn-northwest-1.amazonaws.com.cn 等
   region: 'Bucket 所在区域', // 非必需，AWS 可选，和 endpoint 属性同时存在时以 endpoint 为主，例：cn-north-1
+  bucket: 'Bucket 名称', // 非必需，若为空时则使用内部默认名称
   cname: false, // 非必需，自定义域名，仅 AWS 支持且为必需
   multiFiles: false, // 非必需，是否开启多文件选择，默认 false
 })

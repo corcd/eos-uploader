@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:44:32
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 16:20:32
+ * @LastEditTime: 2020-12-10 12:20:46
  * @Description: ts types modules
  */
 export enum Access {
@@ -19,6 +19,8 @@ export interface UploaderOptions {
   endpoint?: string
   region?: string
   cname?: string
+  bucket?: string
+  accept?: string
   multiFiles?: boolean
 }
 
@@ -26,6 +28,7 @@ export interface CmecloudClientOptions {
   accessKeyId: string
   secretAccessKey: string
   endpoint: string
+  bucket?: string
   sslEnabled: boolean
 }
 
@@ -33,6 +36,7 @@ export interface AliyunClientOptions {
   accessKeyId: string
   accessKeySecret: string
   endpoint: string
+  bucket?: string
 }
 
 export interface AwsClientOptions {
@@ -40,6 +44,7 @@ export interface AwsClientOptions {
   secretAccessKey: string
   endpoint?: string
   region?: string
+  bucket?: string
   cname?: string
 }
 

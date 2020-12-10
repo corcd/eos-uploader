@@ -10,14 +10,21 @@ class Uploader {
             accessKeySecret: '',
             endpoint: '',
             region: '',
+            bucket: '',
             cname: '',
+            accept: 'image/png, image/jpeg, image/gif',
             multiFiles: false,
         };
         this._input = void 0;
-        if (!provider)
+        if (!provider || typeof provider !== 'string')
             throw new Error('请配置正确的云服务商');
-        const values = Object.values(options);
-        const integrity = values.some(item => item === '' || item === null || item === undefined);
+        if (typeof options !== 'object')
+            throw new Error('请填写正确的配置格式');
+        const entries = Object.entries(options);
+        const integrity = entries.some(item => (item[1] === '' || item[1] === null || item[1] === undefined) &&
+            item[0] !== 'bucket' &&
+            item[0] !== 'cname' &&
+            item[0] !== 'accept');
         if (integrity)
             throw new Error('请填写完整的配置信息');
         this._provider = provider.toLowerCase();
@@ -35,13 +42,19 @@ class Uploader {
             return oldTarget;
         }
         const input = window.document.createElement('input');
-        input.setAttribute('id', 'file-chooser');
-        input.setAttribute('type', 'file');
-        input.setAttribute('style', 'visibility: hidden;position: absolute;width: 1px;height: 1px;');
-        if (this._options.multiFiles) {
-            input.setAttribute('multiple', '');
+        try {
+            input.setAttribute('id', 'file-chooser');
+            input.setAttribute('type', 'file');
+            this._options.accept && input.setAttribute('accept', this._options.accept);
+            input.setAttribute('style', 'visibility: hidden;position: absolute;width: 1px;height: 1px;');
+            if (this._options.multiFiles) {
+                input.setAttribute('multiple', '');
+            }
+            document.getElementsByTagName('body')[0].appendChild(input);
         }
-        document.getElementsByTagName('body')[0].appendChild(input);
+        catch (err) {
+            console.error(err);
+        }
         const target = document.getElementById('file-chooser');
         target.addEventListener('click', () => {
             input.click();
@@ -67,6 +80,7 @@ class Uploader {
                     accessKeyId: this._options.accessKeyId,
                     accessKeySecret: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,
+                    bucket: this._options.bucket,
                 });
                 return uploaderInstance.upload(files);
             }
@@ -75,6 +89,7 @@ class Uploader {
                     accessKeyId: this._options.accessKeyId,
                     secretAccessKey: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,
+                    bucket: this._options.bucket,
                     sslEnabled: true,
                 });
                 return uploaderInstance.upload(files);
@@ -85,6 +100,7 @@ class Uploader {
                     secretAccessKey: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,
                     region: this._options.region,
+                    bucket: this._options.bucket,
                     cname: this._options.cname,
                 });
                 return uploaderInstance.upload(files);

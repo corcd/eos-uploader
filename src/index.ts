@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 16:53:39
+ * @LastEditTime: 2020-12-10 12:31:24
  * @Description: index
  */
 import Aliyun from './plugins/aliyun'
@@ -18,17 +18,26 @@ class Uploader {
     accessKeySecret: '',
     endpoint: '',
     region: '',
+    bucket: '',
     cname: '',
+    accept: 'image/png, image/jpeg, image/gif',
     multiFiles: false,
   }
   private _input?: HTMLInputElement = void 0
 
   constructor(provider: ServiceProviders, options: UploaderOptions) {
-    if (!provider) throw new Error('请配置正确的云服务商')
+    if (!provider || typeof provider !== 'string')
+      throw new Error('请配置正确的云服务商')
 
-    const values = Object.values(options)
-    const integrity = values.some(
-      item => item === '' || item === null || item === undefined
+    if (typeof options !== 'object') throw new Error('请填写正确的配置格式')
+
+    const entries = Object.entries(options)
+    const integrity = entries.some(
+      item =>
+        (item[1] === '' || item[1] === null || item[1] === undefined) &&
+        item[0] !== 'bucket' &&
+        item[0] !== 'cname' &&
+        item[0] !== 'accept'
     )
     if (integrity) throw new Error('请填写完整的配置信息')
 
@@ -57,16 +66,23 @@ class Uploader {
     }
 
     const input = window.document.createElement('input')
-    input.setAttribute('id', 'file-chooser')
-    input.setAttribute('type', 'file')
-    input.setAttribute(
-      'style',
-      'visibility: hidden;position: absolute;width: 1px;height: 1px;'
-    )
-    if (this._options.multiFiles) {
-      input.setAttribute('multiple', '')
+
+    try {
+      input.setAttribute('id', 'file-chooser')
+      input.setAttribute('type', 'file')
+      this._options.accept && input.setAttribute('accept', this._options.accept)
+      input.setAttribute(
+        'style',
+        'visibility: hidden;position: absolute;width: 1px;height: 1px;'
+      )
+      if (this._options.multiFiles) {
+        input.setAttribute('multiple', '')
+      }
+      document.getElementsByTagName('body')[0].appendChild(input)
+    } catch (err) {
+      console.error(err)
     }
-    document.getElementsByTagName('body')[0].appendChild(input)
+
     const target = document.getElementById('file-chooser') as HTMLInputElement
     target.addEventListener(
       'click',
@@ -113,6 +129,7 @@ class Uploader {
           accessKeyId: this._options.accessKeyId,
           accessKeySecret: this._options.accessKeySecret,
           endpoint: <string>this._options.endpoint,
+          bucket: <string>this._options.bucket,
         })
         return uploaderInstance.upload(files)
       }
@@ -121,6 +138,7 @@ class Uploader {
           accessKeyId: this._options.accessKeyId,
           secretAccessKey: this._options.accessKeySecret,
           endpoint: <string>this._options.endpoint,
+          bucket: <string>this._options.bucket,
           sslEnabled: true,
         })
         return uploaderInstance.upload(files)
@@ -131,6 +149,7 @@ class Uploader {
           secretAccessKey: this._options.accessKeySecret,
           endpoint: <string>this._options.endpoint,
           region: <string>this._options.region,
+          bucket: <string>this._options.bucket,
           cname: this._options.cname,
         })
         return uploaderInstance.upload(files)

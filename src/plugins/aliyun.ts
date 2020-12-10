@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:44:08
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 14:32:08
+ * @LastEditTime: 2020-12-02 11:24:59
  * @Description: file content
  */
 import OSS from 'ali-oss'
@@ -19,13 +19,15 @@ export default class Aliyun {
     accessKeyId: '',
     accessKeySecret: '',
     endpoint: '',
-    bucket: '',
+    bucket: Aliyun._bucket,
     secure: true,
   }
 
   constructor(options: AliyunClientOptions) {
     Object.assign(this._options, options)
-    this._options.bucket = Aliyun._bucket
+    if (!options.bucket) {
+      this._options.bucket = Aliyun._bucket
+    }
 
     const keys = Object.keys(this._options)
     if (

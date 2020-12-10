@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:43:59
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-11-06 16:01:14
+ * @LastEditTime: 2020-12-02 11:24:25
  * @Description: file content
  */
 import S3 from 'aws-sdk/clients/s3'
@@ -20,6 +20,7 @@ export default class Cmecloud {
     accessKeyId: '',
     secretAccessKey: '',
     endpoint: '',
+    bucket: Cmecloud._bucket,
     s3ForcePathStyle: true,
     signatureVersion: 'v2',
     sslEnabled: false,
@@ -27,6 +28,9 @@ export default class Cmecloud {
 
   constructor(options: CmecloudClientOptions) {
     Object.assign(this._options, options)
+    if (!options.bucket) {
+      this._options.bucket = Cmecloud._bucket
+    }
 
     const keys = Object.keys(this._options)
     if (
@@ -94,7 +98,7 @@ export default class Cmecloud {
 
         const params = {
           Key: `${fileHash}.${fileSuffix}`,
-          Bucket: Cmecloud._bucket,
+          Bucket: this._options.bucket,
           Body: item,
           ACL: 'public-read',
         }
@@ -109,14 +113,14 @@ export default class Cmecloud {
             return resolve(
               `${this._options.sslEnabled ? 'https' : 'http'}://${
                 this._options.endpoint
-              }/${Cmecloud._bucket}/${fileHash}.${fileSuffix}`
+              }/${this._options.bucket}/${fileHash}.${fileSuffix}`
             )
           } else {
             // 多文件
             urls.push(
               `${this._options.sslEnabled ? 'https' : 'http'}://${
                 this._options.endpoint
-              }/${Cmecloud._bucket}/${fileHash}.${fileSuffix}`
+              }/${this._options.bucket}/${fileHash}.${fileSuffix}`
             )
             if (urls.length === filesListLength) return resolve(urls)
           }
