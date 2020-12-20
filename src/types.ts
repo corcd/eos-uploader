@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:44:32
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-12-10 12:20:46
+ * @LastEditTime: 2020-12-21 01:29:45
  * @Description: ts types modules
  */
 export enum Access {
@@ -11,7 +11,7 @@ export enum Access {
   'public-read-write',
 }
 
-export type ServiceProviders = 'aliyun' | 'cmecloud' | 'aws'
+export type ServiceProviders = 'aliyun' | 'tencent' | 'aws' | 'cmecloud'
 
 export interface UploaderOptions {
   accessKeyId: string
@@ -37,6 +37,15 @@ export interface AliyunClientOptions {
   accessKeySecret: string
   endpoint: string
   bucket?: string
+}
+
+export interface TencentClientOptions {
+  accessKeyId: string
+  accessKeySecret: string
+  endpoint?: string
+  region?: string
+  bucket?: string
+  cname?: string
 }
 
 export interface AwsClientOptions {

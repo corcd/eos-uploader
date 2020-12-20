@@ -1,5 +1,6 @@
 import { __awaiter } from "tslib";
 import Aliyun from './plugins/aliyun';
+import Tencent from './plugins/tencent';
 import Cmecloud from './plugins/cmecloud';
 import Aws from './plugins/aws';
 class Uploader {
@@ -80,6 +81,16 @@ class Uploader {
                     accessKeyId: this._options.accessKeyId,
                     accessKeySecret: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,
+                    bucket: this._options.bucket,
+                });
+                return uploaderInstance.upload(files);
+            }
+            case 'tencent': {
+                const uploaderInstance = new Tencent({
+                    accessKeyId: this._options.accessKeyId,
+                    accessKeySecret: this._options.accessKeySecret,
+                    endpoint: this._options.endpoint,
+                    region: this._options.region,
                     bucket: this._options.bucket,
                 });
                 return uploaderInstance.upload(files);

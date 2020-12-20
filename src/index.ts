@@ -2,10 +2,11 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-12-10 12:31:24
+ * @LastEditTime: 2020-12-21 01:40:48
  * @Description: index
  */
 import Aliyun from './plugins/aliyun'
+import Tencent from './plugins/tencent'
 import Cmecloud from './plugins/cmecloud'
 import Aws from './plugins/aws'
 
@@ -129,6 +130,16 @@ class Uploader {
           accessKeyId: this._options.accessKeyId,
           accessKeySecret: this._options.accessKeySecret,
           endpoint: <string>this._options.endpoint,
+          bucket: <string>this._options.bucket,
+        })
+        return uploaderInstance.upload(files)
+      }
+      case 'tencent': {
+        const uploaderInstance = new Tencent({
+          accessKeyId: this._options.accessKeyId,
+          accessKeySecret: this._options.accessKeySecret,
+          endpoint: <string>this._options.endpoint,
+          region: <string>this._options.region,
           bucket: <string>this._options.bucket,
         })
         return uploaderInstance.upload(files)

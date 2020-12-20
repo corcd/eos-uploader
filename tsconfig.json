@@ -3,7 +3,7 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "target": "es6",
-    "module": "ESNext",
+    "module": "esnext",
     "lib": [
       "dom",
       "dom.Iterable",
@@ -30,13 +30,12 @@
     "esModuleInterop": true,
     "typeRoots": ["node_modules/@types"],
   },
-  "include": ["src/**/*"],
+  "include": ["src/index.d.ts", "src/cos.d.ts", "src/**/*"],
   "exclude": [
     "node_modules",
     "**/*.spec.ts",
     "**/dist/**",
     "**/static/**",
-    "**/config/**",
-    "**/*.test.ts"
+    "**/config/**"
   ]
 }
