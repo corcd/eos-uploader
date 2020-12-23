@@ -1,8 +1,9 @@
 {
   "name": "@gdyfe/uploader",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "对象存储上传工具",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "Whzcorcd <whzcorcd@gmail.com>",
   "license": "ISC",
   "private": false,
@@ -42,7 +43,7 @@
     "ali-oss": "^6.11.1",
     "aws-amplify": "^3.3.7",
     "aws-sdk": "^2.762.0",
-    "cos-nodejs-sdk-v5": "^2.8.3",
+    "cos-js-sdk-v5": "^1.1.5",
     "dayjs": "^1.9.1",
     "object-hash": "^2.0.3"
   }

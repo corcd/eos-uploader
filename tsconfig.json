@@ -30,7 +30,7 @@
     "esModuleInterop": true,
     "typeRoots": ["node_modules/@types"],
   },
-  "include": ["src/index.d.ts", "src/cos.d.ts", "src/**/*"],
+  "include": ["src/index.d.ts", "src/**/*"],
   "exclude": [
     "node_modules",
     "**/*.spec.ts",
