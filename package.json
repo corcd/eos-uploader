@@ -1,6 +1,6 @@
 {
   "name": "@gdyfe/uploader",
-  "version": "2.2.2",
+  "version": "2.3.6",
   "description": "对象存储上传工具",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,8 +21,7 @@
   "homepage": "https://github.com/corcd/eos-uploader",
   "repository": "https://github.com/corcd/eos-uploader.git",
   "scripts": {
-    "compile": "tsc",
-    "build": "tsc && rollup --config"
+    "compile": "tsc"
   },
   "devDependencies": {
     "@aws-sdk/types": "^0.1.0-preview.1",
@@ -43,8 +42,12 @@
     "ali-oss": "^6.11.1",
     "aws-amplify": "^3.3.7",
     "aws-sdk": "^2.762.0",
+    "axios": "^0.21.1",
+    "blueimp-md5": "^2.18.0",
     "cos-js-sdk-v5": "^1.1.5",
     "dayjs": "^1.9.1",
-    "object-hash": "^2.0.3"
+    "esdk-obs-nodejs": "^3.20.11",
+    "object-hash": "^2.0.3",
+    "urijs": "^1.19.5"
   }
 }

@@ -1,49 +1,46 @@
 import { __awaiter } from "tslib";
-import AWS from 'aws-sdk';
+import ObsClient from '../libs/obs';
 import hash from 'object-hash';
 import dayjs from 'dayjs';
-export default class Aws {
+export default class Huaweicloud {
     constructor(options) {
         this._client = void 0;
         this._options = {
-            accessKeyId: '',
-            secretAccessKey: '',
-            endpoint: '',
+            access_key_id: '',
+            secret_access_key: '',
+            server: '',
             region: '',
-            bucket: Aws._bucket,
-            cname: '',
+            bucket: Huaweicloud._bucket,
         };
         Object.assign(this._options, options);
         if (!options.bucket) {
-            this._options.bucket = Aws._bucket;
+            this._options.bucket = Huaweicloud._bucket;
         }
         const keys = Object.keys(this._options);
-        if (!keys.includes('accessKeyId') ||
-            !keys.includes('secretAccessKey') ||
-            !keys.includes('cname'))
+        if (!keys.includes('access_key_id') || !keys.includes('secret_access_key'))
             throw new Error('缺少必要的配置信息');
-        const { endpoint, region } = this._options;
-        const hasParam = Object.values({ endpoint, region }).every(item => item === '' || item === null || item === undefined);
+        const { server, region } = this._options;
+        const hasParam = Object.values({ server, region }).every(item => item === '' || item === null || item === undefined);
         if (hasParam) {
             throw new Error('必须提供 endpoint 或者 region 其中一个配置参数');
         }
         const entries = Object.entries(this._options);
-        const integrity = entries.some(item => item[0] !== 'endpoint' &&
+        const integrity = entries.some(item => item[0] !== 'server' &&
             item[0] !== 'region' &&
             item[0] !== 'bucket' &&
             (item[1] === '' || item[1] === null || item[1] === undefined));
         if (integrity)
             throw new Error('请填写完整的配置信息');
-        const credentials = {
-            apiVersion: '2014-06-30',
-            accessKeyId: this._options.accessKeyId,
-            secretAccessKey: this._options.secretAccessKey,
-        };
-        const _region = this._options.endpoint.match(/s3\.(\S*)\.amazonaws\.com\.cn/i);
-        AWS.config.update(credentials);
-        AWS.config.region = _region ? _region[1] : this._options.region;
-        this._client = new AWS.S3({
-            params: { Bucket: this._options.bucket },
+        if (options.server) {
+            this._options.server = `https://${options.server}`;
+        }
+        else {
+            this._options.server = `https://obs.dualstack.${options.region}.myhuaweicloud.com`;
+        }
+        this._client = new ObsClient({
+            access_key_id: this._options.access_key_id,
+            secret_access_key: this._options.secret_access_key,
+            server: this._options.server,
         });
     }
     get getClientInstance() {
@@ -69,22 +66,19 @@ export default class Aws {
             for (const item of files) {
                 const { fileHash, fileSuffix } = this._formatFileName(item);
                 const params = {
-                    Key: `${fileHash}.${fileSuffix}`,
                     Bucket: this._options.bucket,
-                    ContentType: item.type,
-                    Body: item,
-                    'Access-Control-Allow-Credentials': '*',
-                    ACL: 'public-read',
+                    Key: `${fileHash}.${fileSuffix}`,
+                    SourceFile: item,
                 };
-                this._client.upload(params, (err, data) => {
+                this._client.putObject(params, (err, result) => {
                     if (err) {
                         return reject(err);
                     }
                     if (filesListLength === 1) {
-                        return resolve(`https://${this._options.cname}/${data.Key}`);
+                        return resolve(`https://${this._options.bucket}.${this._options.server.replace('https://', '')}/${fileHash}.${fileSuffix}`);
                     }
                     else {
-                        urls.push(`https://${this._options.cname}/${data.Key}`);
+                        urls.push(`https://${this._options.bucket}.${this._options.server.replace('https://', '')}/${fileHash}.${fileSuffix}`);
                         if (urls.length === filesListLength)
                             return resolve(urls);
                     }
@@ -92,5 +86,8 @@ export default class Aws {
             }
         }));
     }
+    close() {
+        this._client.close();
+    }
 }
-Aws._bucket = 'gallery-prod';
+Huaweicloud._bucket = 'g-gallery';

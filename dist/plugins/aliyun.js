@@ -21,10 +21,11 @@ export default class Aliyun {
             !keys.includes('accessKeyId') ||
             !keys.includes('endpoint'))
             throw new Error('缺少必要的配置信息');
-        const values = Object.values(this._options);
-        const integrity = values.some(item => item === '' || item === null || item === undefined);
+        const entries = Object.entries(this._options);
+        const integrity = entries.some(item => item[0] !== 'bucket' &&
+            (item[1] === '' || item[1] === null || item[1] === undefined));
         if (integrity)
-            throw new Error('请填写合法的配置信息');
+            throw new Error('请填写完整的配置信息');
         this._client = new OSS(this._options);
     }
     get getClientInstance() {

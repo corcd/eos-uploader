@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:43:59
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-12-02 11:24:35
+ * @LastEditTime: 2021-02-04 17:59:54
  * @Description: file content
  */
 import AWS from 'aws-sdk'
@@ -39,18 +39,19 @@ export default class Aws {
       throw new Error('缺少必要的配置信息')
 
     const { endpoint, region } = this._options
-    if (
-      Object.values(Object.create({ endpoint, region })).some(
-        item => item === '' || item === null || item === undefined
-      )
+    const hasParam = Object.values({ endpoint, region }).every(
+      item => item === '' || item === null || item === undefined
     )
+    if (hasParam) {
       throw new Error('必须提供 endpoint 或者 region 其中一个配置参数')
+    }
 
     const entries = Object.entries(this._options)
     const integrity = entries.some(
       item =>
         item[0] !== 'endpoint' &&
         item[0] !== 'region' &&
+        item[0] !== 'bucket' &&
         (item[1] === '' || item[1] === null || item[1] === undefined)
     )
     if (integrity) throw new Error('请填写完整的配置信息')

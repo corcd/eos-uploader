@@ -3,7 +3,7 @@ export declare enum Access {
     'public-read' = 1,
     'public-read-write' = 2
 }
-export declare type ServiceProviders = 'aliyun' | 'tencent' | 'aws' | 'cmecloud';
+export declare type ServiceProviders = 'aliyun' | 'tencent' | 'huaweicloud' | 'aws' | 'cmecloud';
 export interface UploaderOptions {
     accessKeyId: string;
     accessKeySecret: string;
@@ -20,6 +20,13 @@ export interface CmecloudClientOptions {
     endpoint: string;
     bucket?: string;
     sslEnabled: boolean;
+}
+export interface HuaweicloudClientOptions {
+    access_key_id: string;
+    secret_access_key: string;
+    server?: string;
+    region?: string;
+    bucket?: string;
 }
 export interface AliyunClientOptions {
     accessKeyId: string;

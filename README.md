@@ -19,7 +19,7 @@ import Uploader from '@gdyfe/uploader'
 const uploader = new Uploader({
   accessKeyId: '您的 Access Id',
   secretAccessKey: '您的 Access Key',
-  endpoint: 'Bucket 域名', // 例：eos-beijing-4.cmecloud.cn
+  endpoint: '接入点/Bucket 域名', // 例：eos-beijing-4.cmecloud.cn
   sslEnabled: true, // 是否开启 https
   multiFiles: false, // 是否开启多文件选择
 })
@@ -33,7 +33,7 @@ import Uploader from '@gdyfe/uploader'
 const uploader = new Uploader('您的云服务商（可选项目见下）', {
   accessKeyId: '您的 Access Id', // 必需
   accessKeySecret: '您的 Access Key', // 必需
-  endpoint: 'Bucket 域名', // 非必需，例：eos-beijing-4.cmecloud.cn、s3.cn-northwest-1.amazonaws.com.cn 等
+  endpoint: '接入点/Bucket 域名', // 非必需，例：eos-beijing-4.cmecloud.cn、s3.cn-northwest-1.amazonaws.com.cn 等
   region: 'Bucket 所在区域', // 非必需，AWS 可选，和 endpoint 属性同时存在时以 endpoint 为主，例：cn-north-1
   bucket: 'Bucket 名称', // 非必需，若为空时则使用内部默认名称
   cname: 'CDN 域名', // 非必需，自定义域名，仅 AWS 支持且为必需
@@ -42,11 +42,13 @@ const uploader = new Uploader('您的云服务商（可选项目见下）', {
 })
 ```
 
-云服务商目前按需支持阿里云 `'aliyun'`、腾讯云 `'tencent'`、AWS `'aws'`、移动云 `'cmecloud'`，未来将添加腾讯云、华为云等更多主流云服务商的集成
+主流云服务商目前按需支持阿里云 `'aliyun'`、腾讯云 `'tencent'`、华为云 `'huaweicloud'`、AWS `'aws'`、移动云 `'cmecloud'`
 
-> 目前目标 Bucket 为内部限制（当前默认阿里云 Bucket 为 guangdianyun，aws Bucket 为 gallery-prod，移动云 Bucket 为 gallery，后续可考虑开放配置）
+> 目标 Bucket 存在内部默认值，当前默认阿里云 Bucket 为 guangdianyun，aws Bucket 为 gallery-prod，华为云为 g-gallery，移动云 Bucket 为 gallery
 
 ## Previous API（Version 1.0.x）
+
+> 1.x 版本 API 不再支持，请尽早换用 2.x 的最新版 API
 
 ### Uploader.upload(target)
 

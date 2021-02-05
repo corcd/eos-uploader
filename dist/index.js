@@ -1,6 +1,7 @@
 import { __awaiter } from "tslib";
 import Aliyun from './plugins/aliyun';
 import Tencent from './plugins/tencent';
+import Huaweicloud from './plugins/huaweicloud';
 import Cmecloud from './plugins/cmecloud';
 import Aws from './plugins/aws';
 class Uploader {
@@ -17,17 +18,29 @@ class Uploader {
             multiFiles: false,
         };
         this._input = void 0;
-        if (!provider || typeof provider !== 'string')
+        if (!provider || typeof provider !== 'string') {
             throw new Error('请配置正确的云服务商');
-        if (typeof options !== 'object')
+        }
+        if (typeof options !== 'object') {
             throw new Error('请填写正确的配置格式');
+        }
+        const hasParam = Object.values({
+            endpoint: options.endpoint,
+            region: options.region,
+        }).every(item => item === '' || item === null || item === undefined);
+        if (hasParam) {
+            throw new Error('必须提供 endpoint 或者 region 其中一个配置参数');
+        }
         const entries = Object.entries(options);
         const integrity = entries.some(item => (item[1] === '' || item[1] === null || item[1] === undefined) &&
+            item[0] !== 'endpoint' &&
+            item[0] !== 'region' &&
             item[0] !== 'bucket' &&
             item[0] !== 'cname' &&
             item[0] !== 'accept');
-        if (integrity)
+        if (integrity) {
             throw new Error('请填写完整的配置信息');
+        }
         this._provider = provider.toLowerCase();
         Object.assign(this._options, options);
     }
@@ -90,6 +103,16 @@ class Uploader {
                     accessKeyId: this._options.accessKeyId,
                     accessKeySecret: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,
+                    region: this._options.region,
+                    bucket: this._options.bucket,
+                });
+                return uploaderInstance.upload(files);
+            }
+            case 'huaweicloud': {
+                const uploaderInstance = new Huaweicloud({
+                    access_key_id: this._options.accessKeyId,
+                    secret_access_key: this._options.accessKeySecret,
+                    server: this._options.endpoint,
                     region: this._options.region,
                     bucket: this._options.bucket,
                 });

@@ -22,11 +22,14 @@ export default class Tencent {
         if (!keys.includes('accessKeyId') || !keys.includes('accessKeySecret'))
             throw new Error('缺少必要的配置信息');
         const { endpoint, region } = this._options;
-        if (Object.values(Object.create({ endpoint, region })).some(item => item === '' || item === null || item === undefined))
+        const hasParam = Object.values({ endpoint, region }).every(item => item === '' || item === null || item === undefined);
+        if (hasParam) {
             throw new Error('必须提供 endpoint 或者 region 其中一个配置参数');
+        }
         const entries = Object.entries(this._options);
         const integrity = entries.some(item => item[0] !== 'endpoint' &&
             item[0] !== 'region' &&
+            item[0] !== 'bucket' &&
             item[0] !== 'cname' &&
             (item[1] === '' || item[1] === null || item[1] === undefined));
         if (integrity)

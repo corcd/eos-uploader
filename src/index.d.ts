@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-12-21 00:33:39
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2020-12-21 00:51:54
+ * @LastEditTime: 2021-02-04 10:45:01
  * @Description: file content
  */
 import { WriteStream } from 'fs'

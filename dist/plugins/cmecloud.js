@@ -24,8 +24,9 @@ export default class Cmecloud {
             !keys.includes('endpoint') ||
             !keys.includes('sslEnabled'))
             throw new Error('缺少必要的配置信息');
-        const values = Object.values(this._options);
-        const integrity = values.some(item => item === '' || item === null || item === undefined);
+        const entries = Object.entries(this._options);
+        const integrity = entries.some(item => item[0] !== 'bucket' &&
+            (item[1] === '' || item[1] === null || item[1] === undefined));
         if (integrity)
             throw new Error('请填写完整的配置信息');
         this._client = new S3(this._options);

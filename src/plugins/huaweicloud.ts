@@ -1,64 +1,76 @@
 /*
  * @Author: Whzcorcd
- * @Date: 2020-10-10 09:43:59
+ * @Date: 2021-02-04 10:01:45
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2021-02-04 18:03:57
+ * @LastEditTime: 2021-02-04 17:58:18
  * @Description: file content
  */
-import S3 from 'aws-sdk/clients/s3'
+// @ts-ignore
+import ObsClient from '../libs/obs'
 import hash from 'object-hash'
 import dayjs from 'dayjs'
 
-import { CmecloudClientOptions, IFileInfo } from '../types'
+import { HuaweicloudClientOptions, IFileInfo } from '../types'
 
-export default class Cmecloud {
-  static readonly _bucket: string = 'gallery'
+export default class Huaweicloud {
+  static readonly _bucket: string = 'g-gallery'
 
-  private _client?: S3 = void 0
+  private _client?: any = void 0
   private _options = {
-    apiVersion: '2006‐03‐01',
-    accessKeyId: '',
-    secretAccessKey: '',
-    endpoint: '',
-    bucket: Cmecloud._bucket,
-    s3ForcePathStyle: true,
-    signatureVersion: 'v2',
-    sslEnabled: false,
+    access_key_id: '',
+    secret_access_key: '',
+    server: '',
+    region: '',
+    bucket: Huaweicloud._bucket,
   }
 
-  constructor(options: CmecloudClientOptions) {
+  constructor(options: HuaweicloudClientOptions) {
     Object.assign(this._options, options)
     if (!options.bucket) {
-      this._options.bucket = Cmecloud._bucket
+      this._options.bucket = Huaweicloud._bucket
     }
 
     const keys = Object.keys(this._options)
-    if (
-      !keys.includes('accessKeyId') ||
-      !keys.includes('secretAccessKey') ||
-      !keys.includes('endpoint') ||
-      !keys.includes('sslEnabled')
-    )
+    if (!keys.includes('access_key_id') || !keys.includes('secret_access_key'))
       throw new Error('缺少必要的配置信息')
+
+    const { server, region } = this._options
+    const hasParam = Object.values({ server, region }).every(
+      item => item === '' || item === null || item === undefined
+    )
+    if (hasParam) {
+      throw new Error('必须提供 endpoint 或者 region 其中一个配置参数')
+    }
 
     const entries = Object.entries(this._options)
     const integrity = entries.some(
       item =>
+        item[0] !== 'server' &&
+        item[0] !== 'region' &&
         item[0] !== 'bucket' &&
         (item[1] === '' || item[1] === null || item[1] === undefined)
     )
     if (integrity) throw new Error('请填写完整的配置信息')
 
-    this._client = new S3(this._options)
+    if (options.server) {
+      this._options.server = `https://${options.server}`
+    } else {
+      this._options.server = `https://obs.dualstack.${options.region}.myhuaweicloud.com`
+    }
+    this._client = new ObsClient({
+      access_key_id: this._options.access_key_id,
+      secret_access_key: this._options.secret_access_key,
+      server: this._options.server,
+    })
   }
 
   /**
    * 获取客户端实例
    * @date 2020-10-10
    * @param {Void}
-   * @returns {S3 | undefined}
+   * @returns {any | undefined}
    */
-  get getClientInstance(): S3 | undefined {
+  get getClientInstance(): any | undefined {
     return this._client
   }
 
@@ -88,7 +100,7 @@ export default class Cmecloud {
    * @returns {Promise}
    */
   public upload(files: FileList | null): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (!this._client) return reject('SDK 加载失败')
       if (!files) return reject('无上传内容')
 
@@ -99,12 +111,11 @@ export default class Cmecloud {
         const { fileHash, fileSuffix } = this._formatFileName(item)
 
         const params = {
-          Key: `${fileHash}.${fileSuffix}`,
           Bucket: this._options.bucket,
-          Body: item,
-          ACL: 'public-read',
+          Key: `${fileHash}.${fileSuffix}`,
+          SourceFile: item,
         }
-        this._client.putObject(params, err => {
+        this._client.putObject(params, (err: string, result: any) => {
           if (err) {
             return reject(err)
           }
@@ -113,21 +124,33 @@ export default class Cmecloud {
           if (filesListLength === 1) {
             // 单文件
             return resolve(
-              `${this._options.sslEnabled ? 'https' : 'http'}://${
-                this._options.endpoint
-              }/${this._options.bucket}/${fileHash}.${fileSuffix}`
+              `https://${this._options.bucket}.${this._options.server.replace(
+                'https://',
+                ''
+              )}/${fileHash}.${fileSuffix}`
             )
           } else {
             // 多文件
             urls.push(
-              `${this._options.sslEnabled ? 'https' : 'http'}://${
-                this._options.endpoint
-              }/${this._options.bucket}/${fileHash}.${fileSuffix}`
+              `https://${this._options.bucket}.${this._options.server.replace(
+                'https://',
+                ''
+              )}/${fileHash}.${fileSuffix}`
             )
             if (urls.length === filesListLength) return resolve(urls)
           }
         })
       }
     })
+  }
+
+  /**
+   * 关闭客户端
+   * @date 2021-02-04
+   * @param {Void} files
+   * @returns {Void}
+   */
+  public close(): void {
+    this._client.close()
   }
 }
