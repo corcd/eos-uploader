@@ -63,11 +63,12 @@ export default class Cmecloud {
                     if (err) {
                         return reject(err);
                     }
+                    const url = `${this._options.sslEnabled ? 'https' : 'http'}://${this._options.bucket}.${this._options.endpoint}/${fileHash}.${fileSuffix}`;
                     if (filesListLength === 1) {
-                        return resolve(`${this._options.sslEnabled ? 'https' : 'http'}://${this._options.endpoint}/${this._options.bucket}/${fileHash}.${fileSuffix}`);
+                        return resolve(url);
                     }
                     else {
-                        urls.push(`${this._options.sslEnabled ? 'https' : 'http'}://${this._options.endpoint}/${this._options.bucket}/${fileHash}.${fileSuffix}`);
+                        urls.push(url);
                         if (urls.length === filesListLength)
                             return resolve(urls);
                     }

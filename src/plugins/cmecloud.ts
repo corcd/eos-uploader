@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:43:59
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2021-02-04 18:03:57
+ * @LastEditTime: 2021-08-31 16:13:26
  * @Description: file content
  */
 import S3 from 'aws-sdk/clients/s3'
@@ -109,21 +109,15 @@ export default class Cmecloud {
             return reject(err)
           }
 
+          const url = `${this._options.sslEnabled ? 'https' : 'http'}://${this._options.bucket}.${this._options.endpoint}/${fileHash}.${fileSuffix}`
+
           // TODO 超时设置
           if (filesListLength === 1) {
             // 单文件
-            return resolve(
-              `${this._options.sslEnabled ? 'https' : 'http'}://${
-                this._options.endpoint
-              }/${this._options.bucket}/${fileHash}.${fileSuffix}`
-            )
+            return resolve(url)
           } else {
             // 多文件
-            urls.push(
-              `${this._options.sslEnabled ? 'https' : 'http'}://${
-                this._options.endpoint
-              }/${this._options.bucket}/${fileHash}.${fileSuffix}`
-            )
+            urls.push(url)
             if (urls.length === filesListLength) return resolve(urls)
           }
         })
