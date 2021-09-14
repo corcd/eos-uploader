@@ -15,11 +15,10 @@ export interface UploaderOptions {
     multiFiles?: boolean;
 }
 export interface CmecloudClientOptions {
-    accessKeyId: string;
-    secretAccessKey: string;
-    endpoint: string;
+    access_key_id: string;
+    secret_access_key: string;
+    endpoint?: string;
     bucket?: string;
-    sslEnabled: boolean;
 }
 export interface HuaweicloudClientOptions {
     access_key_id: string;

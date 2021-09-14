@@ -1,35 +1,32 @@
-import S3 from 'aws-sdk/clients/s3';
+import ObsClient from '../libs/obs';
 import hash from 'object-hash';
 import dayjs from 'dayjs';
 export default class Cmecloud {
     constructor(options) {
         this._client = void 0;
         this._options = {
-            apiVersion: '2006‐03‐01',
-            accessKeyId: '',
-            secretAccessKey: '',
+            access_key_id: '',
+            secret_access_key: '',
             endpoint: '',
             bucket: Cmecloud._bucket,
-            s3ForcePathStyle: true,
-            signatureVersion: 'v2',
-            sslEnabled: false,
         };
         Object.assign(this._options, options);
         if (!options.bucket) {
             this._options.bucket = Cmecloud._bucket;
         }
         const keys = Object.keys(this._options);
-        if (!keys.includes('accessKeyId') ||
-            !keys.includes('secretAccessKey') ||
-            !keys.includes('endpoint') ||
-            !keys.includes('sslEnabled'))
+        if (!keys.includes('access_key_id') || !keys.includes('secret_access_key'))
             throw new Error('缺少必要的配置信息');
         const entries = Object.entries(this._options);
         const integrity = entries.some(item => item[0] !== 'bucket' &&
             (item[1] === '' || item[1] === null || item[1] === undefined));
         if (integrity)
             throw new Error('请填写完整的配置信息');
-        this._client = new S3(this._options);
+        this._client = new ObsClient({
+            access_key_id: this._options.access_key_id,
+            secret_access_key: this._options.secret_access_key,
+            server: `https://${options.endpoint}`,
+        });
     }
     get getClientInstance() {
         return this._client;
@@ -56,14 +53,13 @@ export default class Cmecloud {
                 const params = {
                     Key: `${fileHash}.${fileSuffix}`,
                     Bucket: this._options.bucket,
-                    Body: item,
-                    ACL: 'public-read',
+                    SourceFile: item
                 };
-                this._client.putObject(params, err => {
+                this._client.putObject(params, (err, result) => {
                     if (err) {
                         return reject(err);
                     }
-                    const url = `${this._options.sslEnabled ? 'https' : 'http'}://${this._options.bucket}.${this._options.endpoint}/${fileHash}.${fileSuffix}`;
+                    const url = `https://${this._options.bucket}.${this._options.endpoint}/${fileHash}.${fileSuffix}`;
                     if (filesListLength === 1) {
                         return resolve(url);
                     }
@@ -76,5 +72,8 @@ export default class Cmecloud {
             }
         });
     }
+    close() {
+        this._client.close();
+    }
 }
-Cmecloud._bucket = 'gallery';
+Cmecloud._bucket = 'g-gallery';

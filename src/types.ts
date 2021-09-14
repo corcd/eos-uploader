@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:44:32
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2021-02-04 17:56:14
+ * @LastEditTime: 2021-09-14 15:26:54
  * @Description: ts types modules
  */
 export enum Access {
@@ -30,11 +30,10 @@ export interface UploaderOptions {
 }
 
 export interface CmecloudClientOptions {
-  accessKeyId: string
-  secretAccessKey: string
-  endpoint: string
+  access_key_id: string
+  secret_access_key: string
+  endpoint?: string
   bucket?: string
-  sslEnabled: boolean
 }
 
 export interface HuaweicloudClientOptions {

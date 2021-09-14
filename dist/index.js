@@ -120,11 +120,10 @@ class Uploader {
             }
             case 'cmecloud': {
                 const uploaderInstance = new Cmecloud({
-                    accessKeyId: this._options.accessKeyId,
-                    secretAccessKey: this._options.accessKeySecret,
+                    access_key_id: this._options.accessKeyId,
+                    secret_access_key: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,
                     bucket: this._options.bucket,
-                    sslEnabled: true,
                 });
                 return uploaderInstance.upload(files);
             }

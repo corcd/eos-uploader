@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2021-02-04 17:58:31
+ * @LastEditTime: 2021-09-14 15:26:56
  * @Description: index
  */
 import Aliyun from './plugins/aliyun'
@@ -171,11 +171,10 @@ class Uploader {
       }
       case 'cmecloud': {
         const uploaderInstance = new Cmecloud({
-          accessKeyId: this._options.accessKeyId,
-          secretAccessKey: this._options.accessKeySecret,
+          access_key_id: this._options.accessKeyId,
+          secret_access_key: this._options.accessKeySecret,
           endpoint: <string>this._options.endpoint,
           bucket: <string>this._options.bucket,
-          sslEnabled: true,
         })
         return uploaderInstance.upload(files)
       }

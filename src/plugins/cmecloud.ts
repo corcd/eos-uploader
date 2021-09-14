@@ -2,28 +2,24 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:43:59
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2021-08-31 16:13:26
+ * @LastEditTime: 2021-09-14 15:45:43
  * @Description: file content
  */
-import S3 from 'aws-sdk/clients/s3'
+import ObsClient from '../libs/obs'
 import hash from 'object-hash'
 import dayjs from 'dayjs'
 
 import { CmecloudClientOptions, IFileInfo } from '../types'
 
 export default class Cmecloud {
-  static readonly _bucket: string = 'gallery'
+  static readonly _bucket: string = 'g-gallery'
 
-  private _client?: S3 = void 0
+  private _client?: any = void 0
   private _options = {
-    apiVersion: '2006‐03‐01',
-    accessKeyId: '',
-    secretAccessKey: '',
+    access_key_id: '',
+    secret_access_key: '',
     endpoint: '',
     bucket: Cmecloud._bucket,
-    s3ForcePathStyle: true,
-    signatureVersion: 'v2',
-    sslEnabled: false,
   }
 
   constructor(options: CmecloudClientOptions) {
@@ -33,12 +29,7 @@ export default class Cmecloud {
     }
 
     const keys = Object.keys(this._options)
-    if (
-      !keys.includes('accessKeyId') ||
-      !keys.includes('secretAccessKey') ||
-      !keys.includes('endpoint') ||
-      !keys.includes('sslEnabled')
-    )
+    if (!keys.includes('access_key_id') || !keys.includes('secret_access_key'))
       throw new Error('缺少必要的配置信息')
 
     const entries = Object.entries(this._options)
@@ -49,16 +40,20 @@ export default class Cmecloud {
     )
     if (integrity) throw new Error('请填写完整的配置信息')
 
-    this._client = new S3(this._options)
+    this._client = new ObsClient({
+      access_key_id: this._options.access_key_id,
+      secret_access_key: this._options.secret_access_key,
+      server: `https://${options.endpoint}`,
+    })
   }
 
   /**
    * 获取客户端实例
    * @date 2020-10-10
    * @param {Void}
-   * @returns {S3 | undefined}
+   * @returns {any | undefined}
    */
-  get getClientInstance(): S3 | undefined {
+  get getClientInstance(): any | undefined {
     return this._client
   }
 
@@ -101,15 +96,14 @@ export default class Cmecloud {
         const params = {
           Key: `${fileHash}.${fileSuffix}`,
           Bucket: this._options.bucket,
-          Body: item,
-          ACL: 'public-read',
+          SourceFile: item
         }
-        this._client.putObject(params, err => {
+        this._client.putObject(params, (err: string, result: any) => {
           if (err) {
             return reject(err)
           }
 
-          const url = `${this._options.sslEnabled ? 'https' : 'http'}://${this._options.bucket}.${this._options.endpoint}/${fileHash}.${fileSuffix}`
+          const url = `https://${this._options.bucket}.${this._options.endpoint}/${fileHash}.${fileSuffix}`
 
           // TODO 超时设置
           if (filesListLength === 1) {
@@ -123,5 +117,15 @@ export default class Cmecloud {
         })
       }
     })
+  }
+
+  /**
+   * 关闭客户端
+   * @date 2021-09-04
+   * @param {Void} files
+   * @returns {Void}
+   */
+   public close(): void {
+    this._client.close()
   }
 }
