@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:44:08
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2021-02-04 18:04:05
+ * @LastEditTime: 2022-02-23 14:30:13
  * @Description: file content
  */
 import OSS from 'ali-oss'
@@ -32,7 +32,7 @@ export default class Aliyun {
     const keys = Object.keys(this._options)
     if (
       !keys.includes('accessKeyId') ||
-      !keys.includes('accessKeyId') ||
+      !keys.includes('accessKeySecret') ||
       !keys.includes('endpoint')
     )
       throw new Error('缺少必要的配置信息')
@@ -45,7 +45,13 @@ export default class Aliyun {
     )
     if (integrity) throw new Error('请填写完整的配置信息')
 
-    this._client = new OSS(this._options)
+    this._client = new OSS({
+      region: this._options.endpoint.split('.')[1],
+      accessKeyId: this._options.accessKeyId,
+      accessKeySecret: this._options.accessKeySecret,
+      bucket: this._options.bucket,
+      secure: this._options.secure
+    })
   }
 
   /**

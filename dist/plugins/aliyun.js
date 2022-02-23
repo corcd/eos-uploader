@@ -18,7 +18,7 @@ export default class Aliyun {
         }
         const keys = Object.keys(this._options);
         if (!keys.includes('accessKeyId') ||
-            !keys.includes('accessKeyId') ||
+            !keys.includes('accessKeySecret') ||
             !keys.includes('endpoint'))
             throw new Error('缺少必要的配置信息');
         const entries = Object.entries(this._options);
@@ -26,7 +26,13 @@ export default class Aliyun {
             (item[1] === '' || item[1] === null || item[1] === undefined));
         if (integrity)
             throw new Error('请填写完整的配置信息');
-        this._client = new OSS(this._options);
+        this._client = new OSS({
+            region: this._options.endpoint.split('.')[1],
+            accessKeyId: this._options.accessKeyId,
+            accessKeySecret: this._options.accessKeySecret,
+            bucket: this._options.bucket,
+            secure: this._options.secure
+        });
     }
     get getClientInstance() {
         return this._client;
