@@ -1,0 +1,31 @@
+export default class CustomUploader {
+    static readonly _serverPath: string;
+    private file;
+    private hash;
+    private worker;
+    private Scheduler;
+    private curStatus;
+    private hashPercent;
+    private uploadedLen;
+    private chunksLen;
+    private fileChunks;
+    private showPreview;
+    constructor();
+    get hashPercentProgress(): number;
+    get uploadPercentProgress(): number;
+    get previewStatus(): boolean;
+    get hashProgressStatus(): "success" | null;
+    get uploadProgressStatus(): "failed" | "success" | null;
+    handleFileChange(e: HTMLInputElement): void;
+    handleUpload(): Promise<void>;
+    handlePause(): void;
+    handleResume(): void;
+    handleRetry(): Promise<void>;
+    private resetInitialState;
+    private generatePreview;
+    private createFileChunks;
+    private getFileHash;
+    private verifyUpload;
+    private uploadChunks;
+    private mergeRequest;
+}
