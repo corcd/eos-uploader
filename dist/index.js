@@ -3,6 +3,7 @@ import Aliyun from './plugins/aliyun';
 import Tencent from './plugins/tencent';
 import Huaweicloud from './plugins/huaweicloud';
 import Cmecloud from './plugins/cmecloud';
+import Ctyun from './plugins/ctyun';
 import Aws from './plugins/aws';
 class Uploader {
     constructor(provider, options) {
@@ -120,6 +121,15 @@ class Uploader {
             }
             case 'cmecloud': {
                 const uploaderInstance = new Cmecloud({
+                    access_key_id: this._options.accessKeyId,
+                    secret_access_key: this._options.accessKeySecret,
+                    endpoint: this._options.endpoint,
+                    bucket: this._options.bucket,
+                });
+                return uploaderInstance.upload(files);
+            }
+            case 'ctyun': {
+                const uploaderInstance = new Ctyun({
                     access_key_id: this._options.accessKeyId,
                     secret_access_key: this._options.accessKeySecret,
                     endpoint: this._options.endpoint,

@@ -2,13 +2,14 @@
  * @Author: Whzcorcd
  * @Date: 2020-09-29 19:28:49
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2021-09-14 15:26:56
+ * @LastEditTime: 2022-03-21 09:41:51
  * @Description: index
  */
 import Aliyun from './plugins/aliyun'
 import Tencent from './plugins/tencent'
 import Huaweicloud from './plugins/huaweicloud'
 import Cmecloud from './plugins/cmecloud'
+import Ctyun from './plugins/ctyun'
 import Aws from './plugins/aws'
 
 import { ServiceProviders, UploaderOptions } from './types'
@@ -171,6 +172,15 @@ class Uploader {
       }
       case 'cmecloud': {
         const uploaderInstance = new Cmecloud({
+          access_key_id: this._options.accessKeyId,
+          secret_access_key: this._options.accessKeySecret,
+          endpoint: <string>this._options.endpoint,
+          bucket: <string>this._options.bucket,
+        })
+        return uploaderInstance.upload(files)
+      }
+      case 'ctyun': {
+        const uploaderInstance = new Ctyun({
           access_key_id: this._options.accessKeyId,
           secret_access_key: this._options.accessKeySecret,
           endpoint: <string>this._options.endpoint,

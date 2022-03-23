@@ -2,7 +2,7 @@
  * @Author: Whzcorcd
  * @Date: 2020-10-10 09:44:32
  * @LastEditors: Whzcorcd
- * @LastEditTime: 2021-09-14 15:26:54
+ * @LastEditTime: 2022-03-21 09:42:46
  * @Description: ts types modules
  */
 export enum Access {
@@ -17,6 +17,7 @@ export type ServiceProviders =
   | 'huaweicloud'
   | 'aws'
   | 'cmecloud'
+  | 'ctyun'
 
 export interface UploaderOptions {
   accessKeyId: string
@@ -27,6 +28,13 @@ export interface UploaderOptions {
   bucket?: string
   accept?: string
   multiFiles?: boolean
+}
+
+export interface CtyunClientOptions {
+  access_key_id: string
+  secret_access_key: string
+  endpoint?: string
+  bucket?: string
 }
 
 export interface CmecloudClientOptions {

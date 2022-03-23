@@ -42,9 +42,9 @@ const uploader = new Uploader('您的云服务商（可选项目见下）', {
 })
 ```
 
-主流云服务商目前按需支持阿里云 `'aliyun'`、腾讯云 `'tencent'`、华为云 `'huaweicloud'`、AWS `'aws'`、移动云 `'cmecloud'`
+主流云服务商目前按需支持阿里云 `'aliyun'`、腾讯云 `'tencent'`、华为云 `'huaweicloud'`、AWS `'aws'`、移动云 `'cmecloud'`、天翼云 `'ctyun'`
 
-> 目标 Bucket 存在内部默认值，当前默认阿里云 Bucket 为 guangdianyun，aws Bucket 为 gallery-prod，华为云为 g-gallery，移动云 Bucket 为 gallery
+> 目标 Bucket 存在内部默认值，当前默认阿里云 Bucket 为 guangdianyun，aws Bucket 为 gallery-prod，华为云 & 天翼云为 g-gallery，移动云 Bucket 为 gallery
 
 ## Previous API（Version 1.0.x）
 

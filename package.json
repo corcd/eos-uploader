@@ -1,6 +1,6 @@
 {
   "name": "@gdyfe/uploader",
-  "version": "2.3.9",
+  "version": "2.4.1",
   "description": "对象存储上传工具",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,12 +11,14 @@
     "access": "public"
   },
   "keywords": [
+    "oos",
     "oss",
     "obs",
     "eos",
     "aliyun",
     "aws",
     "cmecloud",
+    "ctyun",
     "uploader"
   ],
   "homepage": "https://github.com/corcd/eos-uploader",

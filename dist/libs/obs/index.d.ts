@@ -15,8 +15,8 @@ declare class ObsClient {
     exec(funcName: any, param: any, callback: any): void;
     initLog(param: any): void;
     factory(param: any): void;
-    log: import("./log") | undefined;
-    util: import("./utils") | undefined;
+    log: LogUtil | undefined;
+    util: Utils | undefined;
     refresh(access_key_id: any, secret_access_key: any, security_token: any): void;
     createSignedUrlSync(param: any): {
         ActualSignedRequestHeaders: {};
@@ -53,5 +53,8 @@ declare class ObsClient {
         Date: string;
         Signature: any;
     };
-    enums: typeof import("./enums");
+    enums: typeof enums;
 }
+import LogUtil = require("./log");
+import Utils = require("./utils");
+import enums = require("./enums");
